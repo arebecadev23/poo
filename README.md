@@ -1,6 +1,5 @@
-# 📚 Documentação Técnica: Sistema de Cadastro em C++
-Este projeto foi desenvolvido como parte dos meus estudos em Ciência da Computação, com o objetivo de aplicar de forma prática os pilares da Programação Orientada a Objetos (POO) e o gerenciamento de memória em baixo nível com C++.
-
+# 📚 Documentação Técnica: Sistema de Livraria em C++
+Este projeto foi desenvolvido para o trabalho final da disciplina de Programação Orientada a Objetos, com o objetivo de aplicar de forma ativa os conhecimenstos em: Referências, POnteiros, Constantes, Uso de pirincipos de OO.
 # 🏗️ Arquitetura do Código e Conceitos Aplicados
 Abaixo, detalho onde cada conceito fundamental da linguagem foi implementado e o porquê de cada escolha técnica.
 
@@ -14,24 +13,25 @@ Abstração: Criamos uma representação simplificada de um livro real, focando 
 Construtor com Lista de Inicialização: ```cpp
 Livro(const std::string& t, const std::string& a, float p) : titulo(t), autor(a), preco(p) {}
 
-Diferente da atribuição comum, a **lista de inicialização** define os valores no momento em que o objeto nasce, o que é mais eficiente e recomendado em C++.
+Diferente da atribuição comum, a **lista de inicialização** define os valores no momento em que o objeto nasce, o que é mais eficiente e recomendado em C++. --> uso do new
 
 ## 2. Gestão de Memória com Ponteiros
 Ponteiros são utilizados para dar flexibilidade ao armazenamento dos livros.
 
 Vetor de Ponteiros: Livro* livros[20];
 Em vez de criar 20 objetos de uma vez na memória Stack (estática), criamos 20 "ponteiros" (endereços). Isso permite que os livros reais sejam criados apenas quando necessário.
-
+Vetores de ponteiros são vetores que podem armazenar múltiplos ponteiros. Cada ponteiro dentro de um vetor de ponteiros aponta para um endereço que armazena um valor. Podemos usar vetores de ponteiros para gerenciar valores que não estão armazenados em memória contínua.
 Alocação Dinâmica (new):
 
 C++
 
 livros[qtd] = new Livro(titulo, autor, preco);
 Aqui o objeto é alocado na Heap. Isso é crucial porque objetos na Heap permanecem vivos até que nós decidamos deletá-los, permitindo que os dados persistam durante toda a execução do menu.
+heap: é uma grande área de memória usada para alocação dinâmica de objetos e dados que persistem além do escopo de uma função, frequentemente acessada via ponteiros
 
 Operador Seta (->): Usado para acessar métodos através de ponteiros, como em livros[i]->exibir();. Ele faz o trabalho de desreferenciar o endereço e chamar a função do objeto.
 
-## 3. Uso Estratégico de Referências (&)
+## 3. Uso de Referências (&)
 As referências foram usadas para otimizar o desempenho e permitir a modificação de variáveis globais.
 
 Evitando Cópias: No construtor, usamos const std::string& t. Sem o &, o C++ criaria uma cópia inteira do texto na memória toda vez que cadastrássemos um livro. Com a referência, trabalhamos direto com o dado original.
@@ -41,7 +41,7 @@ Modificação de Variáveis (Passagem por Referência):
 C++
 
 void cadastrarLivro(Livro* livros[], int& qtd)
-Ao usar int& qtd, a função não recebe uma cópia do número de livros, mas sim o acesso à variável real que está dentro do main. Assim, quando aumentamos qtd++ dentro da função, o main fica sabendo imediatamente.
+Ao usar int& qtd, a função não recebe uma cópia do número de livros, mas sim o **acesso** à variável real que está dentro do main. Assim, quando aumentamos qtd++ dentro da função, o main fica sabendo imediatamente.
 
 ## 4. Segurança com Constantes (const)
 O modificador const foi aplicado como uma "trava de segurança" em três níveis:
