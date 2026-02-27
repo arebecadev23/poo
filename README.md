@@ -1,254 +1,63 @@
-📚 Documentação Técnica – Sistema de Cadastro de Livros em C++
-📌 Visão Geral do Sistema
+# 📚 Documentação Técnica: Sistema de Cadastro em C++
+Este projeto foi desenvolvido como parte dos meus estudos em Ciência da Computação, com o objetivo de aplicar de forma prática os pilares da Programação Orientada a Objetos (POO) e o gerenciamento de memória em baixo nível com C++.
 
-O programa implementa um pequeno sistema de gerenciamento de livros utilizando:
+# 🏗️ Arquitetura do Código e Conceitos Aplicados
+Abaixo, detalho onde cada conceito fundamental da linguagem foi implementado e o porquê de cada escolha técnica.
 
-Programação Orientada a Objetos (POO)
+## 1. Programação Orientada a Objetos (POO)
+O sistema utiliza a classe Livro como molde para a criação de objetos.
 
-Ponteiros
+Encapsulamento: Os atributos titulo, autor e preco estão na seção private. Isso significa que eles estão protegidos contra acessos externos diretos, garantindo a integridade dos dados através de métodos de interface (public).
 
-Referências
+Abstração: Criamos uma representação simplificada de um livro real, focando apenas nos dados necessários para o sistema.
 
-Constantes (const)
+Construtor com Lista de Inicialização: ```cpp
+Livro(const std::string& t, const std::string& a, float p) : titulo(t), autor(a), preco(p) {}
 
-Alocação dinâmica de memória (new / delete)
+Diferente da atribuição comum, a **lista de inicialização** define os valores no momento em que o objeto nasce, o que é mais eficiente e recomendado em C++.
 
-O sistema permite:
+## 2. Gestão de Memória com Ponteiros
+Ponteiros são utilizados para dar flexibilidade ao armazenamento dos livros.
 
-Cadastrar livros
+Vetor de Ponteiros: Livro* livros[20];
+Em vez de criar 20 objetos de uma vez na memória Stack (estática), criamos 20 "ponteiros" (endereços). Isso permite que os livros reais sejam criados apenas quando necessário.
 
-Listar livros
+Alocação Dinâmica (new):
 
-Comprar livros
+C++
 
-Liberar memória ao final do programa
-
-🧱 1. Programação Orientada a Objetos (POO)
-
-A POO é aplicada principalmente através da classe Livro.
-
-📌 Classe Livro
-class Livro {
-private:
-    std::string titulo;
-    std::string autor;
-    float preco;
-
-public:
-    Livro(const std::string& t, const std::string& a, float p);
-    void exibir() const;
-    std::string getTitulo() const;
-};
-🔐 Encapsulamento
-private:
-    std::string titulo;
-    std::string autor;
-    float preco;
-
-Esses atributos são privados.
-
-Isso significa que:
-
-Eles só podem ser acessados dentro da própria classe.
-
-Não podem ser modificados diretamente fora da classe.
-
-Isso protege os dados contra alterações indevidas.
-
-🏗 Construtor
-Livro(const std::string& t, const std::string& a, float p)
-    : titulo(t), autor(a), preco(p) {}
-
-Função do construtor:
-
-Inicializar o objeto no momento da criação.
-
-Garantir que todo livro tenha título, autor e preço.
-
-O uso de lista de inicialização (: titulo(t)) é mais eficiente que atribuição dentro do corpo.
-
-🔎 Método exibir()
-void exibir() const
-
-Não altera o objeto.
-
-Apenas exibe informações.
-
-O const garante que os atributos não serão modificados.
-
-🔓 Método getTitulo()
-std::string getTitulo() const
-
-Permite acessar o título sem permitir modificação.
-
-Isso mantém o encapsulamento seguro.
-
-👉 2. Ponteiros no Código
-
-Ponteiros armazenam endereços de memória.
-
-📌 Onde os ponteiros aparecem?
-1️⃣ Vetor de ponteiros
-Livro* livros[20];
-
-Isso significa:
-
-livros é um vetor com 20 posições.
-
-Cada posição armazena um ponteiro para Livro.
-
-Cada posição guarda o endereço de um objeto criado com new.
-
-Visualmente:
-
-livros[0] → endereço do Livro A
-livros[1] → endereço do Livro B
-2️⃣ Alocação dinâmica
 livros[qtd] = new Livro(titulo, autor, preco);
+Aqui o objeto é alocado na Heap. Isso é crucial porque objetos na Heap permanecem vivos até que nós decidamos deletá-los, permitindo que os dados persistam durante toda a execução do menu.
 
-O new:
+Operador Seta (->): Usado para acessar métodos através de ponteiros, como em livros[i]->exibir();. Ele faz o trabalho de desreferenciar o endereço e chamar a função do objeto.
 
-Cria o objeto na memória heap.
+## 3. Uso Estratégico de Referências (&)
+As referências foram usadas para otimizar o desempenho e permitir a modificação de variáveis globais.
 
-Retorna o endereço do objeto.
+Evitando Cópias: No construtor, usamos const std::string& t. Sem o &, o C++ criaria uma cópia inteira do texto na memória toda vez que cadastrássemos um livro. Com a referência, trabalhamos direto com o dado original.
 
-Esse endereço é armazenado no vetor.
+Modificação de Variáveis (Passagem por Referência):
 
-Sem new, o objeto morreria ao sair da função.
+C++
 
-3️⃣ Acesso via ponteiro
-livros[i]->exibir();
-
-O operador ->:
-
-Acessa membros do objeto através do ponteiro.
-
-Equivale a:
-
-(*livros[i]).exibir();
-4️⃣ Liberação de memória
-delete livros[i];
-
-Isso é obrigatório porque usamos new.
-
-Sem delete, ocorreria vazamento de memória (memory leak).
-
-🔁 3. Referências (&)
-
-Referências permitem acessar uma variável original sem copiar.
-
-📌 Referência no construtor
-Livro(const std::string& t, const std::string& a, float p)
-
-Por que usar referência?
-
-Evita cópia da string
-
-Melhora desempenho
-
-Mantém integridade dos dados
-
-Sem referência, a string seria copiada ao passar como argumento.
-
-📌 Referência na função cadastrarLivro
 void cadastrarLivro(Livro* livros[], int& qtd)
+Ao usar int& qtd, a função não recebe uma cópia do número de livros, mas sim o acesso à variável real que está dentro do main. Assim, quando aumentamos qtd++ dentro da função, o main fica sabendo imediatamente.
 
-int& qtd significa:
+## 4. Segurança com Constantes (const)
+O modificador const foi aplicado como uma "trava de segurança" em três níveis:
 
-Estamos usando a variável original do main.
+Parâmetros de Entrada: Impede que o construtor altere o título ou autor recebido.
 
-Alterações feitas dentro da função afetam o valor no main.
+Métodos de Leitura: void exibir() const;
+Isso avisa ao compilador que a função exibir garante que não vai mudar o preço ou o nome do livro, apenas mostrar. Isso evita bugs acidentais.
 
-Se fosse:
+Integridade: Ajuda na otimização do compilador e torna o código mais legível para outros desenvolvedores.
 
-int qtd
+# 🛠️ Fluxo de Execução
+Início: O programa reserva espaço para 20 endereços de memória.
 
-Estaria trabalhando com uma cópia.
-O valor original não seria alterado.
+Cadastro: O usuário digita os dados -> O new reserva um espaço na Heap -> O endereço desse espaço é guardado no vetor.
 
-🛡 4. Constantes (const)
+Listagem: O código percorre o vetor, segue os endereços (ponteiros) e chama o método exibir() de cada objeto.
 
-const impede modificações indevidas.
-
-📌 1️⃣ Const nos parâmetros
-const std::string& t
-
-Garante que:
-
-A string não será modificada dentro do construtor.
-
-📌 2️⃣ Const nos métodos
-void exibir() const
-
-Isso significa:
-
-O método não altera o estado do objeto.
-
-Pode ser chamado em objetos constantes.
-
-Sem esse const, o compilador pode impedir certas chamadas.
-
-📌 3️⃣ Segurança adicional
-
-O uso correto de const:
-
-Previne erros
-
-Deixa o código mais confiável
-
-Ajuda o compilador a otimizar
-
-🔄 5. Fluxo de Memória do Programa
-
-O programa inicia
-
-livros é criado como vetor de ponteiros
-
-Ao cadastrar:
-
-new Livro(...) cria objeto na heap
-
-Endereço é armazenado no vetor
-
-Ao listar:
-
-Acessa objeto via ->
-
-Ao sair:
-
-delete libera cada objeto
-
-⚙ 6. Relação Entre os Conceitos
-Conceito	Onde aparece	Função
-POO	Classe Livro	Organização e encapsulamento
-Ponteiros	Livro* livros[20]	Armazenar objetos dinamicamente
-new / delete	Cadastro e final do main	Controle manual de memória
-Referência &	int& qtd	Alterar variável original
-const	Construtor e métodos	Segurança e imutabilidade
-🧠 7. Por que esse modelo é importante?
-
-Esse código ensina fundamentos essenciais de C++:
-
-Gerenciamento manual de memória
-
-Diferença entre stack e heap
-
-Encapsulamento
-
-Segurança com const
-
-Eficiência com referências
-
-Uso correto de ponteiros
-
-🚀 8. Possível Evolução do Código
-
-Em projetos mais modernos, seria recomendado usar:
-
-std::vector ao invés de array fixo
-
-std::unique_ptr ao invés de new e delete
-
-Separação em arquivos .h e .cpp
-
-Mas para aprendizado, seu código está excelente para entender base estrutural da linguagem.
+Finalização: O programa executa um loop de delete, limpando a memória Heap e evitando o uso desnecessário de RAM do computador.
